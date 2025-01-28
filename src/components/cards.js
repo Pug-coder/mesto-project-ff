@@ -49,7 +49,7 @@ export function createPlaceCard(cardData, deleteHandler, setLike, openImagePopup
     placeImg.addEventListener('click', () => {
         openImagePopup(cardData.name, cardData.link)
     });
-    
+
     const removePlaceButton = placeElement.querySelector('.card__delete-button');
 
     const likeButton = placeElement.querySelector('.card__like-button');
@@ -60,9 +60,4 @@ export function createPlaceCard(cardData, deleteHandler, setLike, openImagePopup
     removePlaceButton.addEventListener('click', deleteHandler);
 
     return placeElement;
-}
-
-
-function openPlaceCardForm() {
-  
 }
