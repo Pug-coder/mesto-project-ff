@@ -2,6 +2,7 @@ import './pages/index.css';
 
 import { initialCards, deletePlace, createPlaceCard, setLike } from './components/cards.js';
 import { openPopup, closePopup, handlePopupClick} from './components/modal.js';
+import { enableValidation, clearValidationErrors } from './components/validate.js';
 
 const placesContainer = document.querySelector('.places__list');
 
@@ -63,9 +64,7 @@ function handleAddCardSubmit(evt) {
     const placeCard = createPlaceCard(newCard, deletePlace, setLike, openImagePopup);
     placesContainer.prepend(placeCard);
 
-    cardNameInput.value = '';
-    cardLinkInput.value = '';
-
+    evt.target.reset();
     closePopup(addCardPopup);
 }
 
@@ -76,11 +75,13 @@ popups.forEach((popup) => {
 profileFormElement.addEventListener('submit', handleProfileFormSUbmit);
 editProfileButton.addEventListener('click', () => {
     populateProfileForm();
+    clearValidationErrors(profileFormElement);
     openPopup(editPopup);
 });
 
 
 addCardButton.addEventListener('click', () => {
+    clearValidationErrors(addCardForm);
     openPopup(addCardPopup);
 });
 addCardForm.addEventListener('submit', handleAddCardSubmit);
@@ -92,3 +93,5 @@ function addPlaces() {
     });
 }
 addPlaces();
+
+enableValidation();
