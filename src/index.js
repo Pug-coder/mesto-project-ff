@@ -1,9 +1,9 @@
 import './pages/index.css';
 
-import { initialCards, deletePlace, createPlaceCard, setLike } from './components/cards.js';
+import { deletePlace, createPlaceCard, setLike } from './components/cards.js';
 import { openPopup, closePopup, handlePopupClick} from './components/modal.js';
 import { enableValidation, clearValidationErrors } from './components/validate.js';
-
+import { getInitialCards, getUserInfo, updateUserProfile } from './api.js';
 const placesContainer = document.querySelector('.places__list');
 
 
@@ -36,13 +36,18 @@ function populateProfileForm() {
     jobInput.value = profileDescription.textContent;
 }
 
-function handleProfileFormSUbmit(evt) {
+function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
-    profileName.textContent = nameInput.value;
-    profileDescription.textContent = jobInput.value;
-
-    closePopup(editPopup);
+    updateUserProfile(nameInput.value, jobInput.value)
+    .then((userData) => {
+        updateUserInfo(userData);
+        closePopup(editPopup);
+    })
+    .catch((err) => {
+        console.log('Ошибка при обновлении данных пользователя', err);
+    });
+    
 }
 
 function openImagePopup(name, link) {
@@ -72,7 +77,7 @@ popups.forEach((popup) => {
     popup.addEventListener('click', handlePopupClick);
 });
 
-profileFormElement.addEventListener('submit', handleProfileFormSUbmit);
+profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 editProfileButton.addEventListener('click', () => {
     populateProfileForm();
     clearValidationErrors(profileFormElement);
@@ -86,12 +91,23 @@ addCardButton.addEventListener('click', () => {
 });
 addCardForm.addEventListener('submit', handleAddCardSubmit);
 
-function addPlaces() {
-    initialCards.forEach((cardData) => {
-        const placeCard = createPlaceCard(cardData, deletePlace, setLike, openImagePopup);
-        placesContainer.append(placeCard);
-    });
+function updateUserInfo(userInfo) {
+    profileName.textContent = userInfo.name;
+    profileDescription.textContent = userInfo.about;
 }
-addPlaces();
+
+Promise.all([getInitialCards(), getUserInfo()])
+    .then(([cards, userInfo]) => {
+        cards.forEach((cardData) => {
+            updateUserInfo(userInfo);
+
+            const placeCard = createPlaceCard(cardData, deletePlace, setLike, openImagePopup);
+            placesContainer.append(placeCard);
+        });
+        
+    })
+    .catch((err) => {
+        console.log('Ошибка при получении данных', err);
+    });
 
 enableValidation();
