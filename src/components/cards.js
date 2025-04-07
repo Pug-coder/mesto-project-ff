@@ -25,6 +25,10 @@ export function createPlaceCard(cardData, deleteHandler, setLike, openImagePopup
     const removePlaceButton = placeElement.querySelector('.card__delete-button');
 
     const likeButton = placeElement.querySelector('.card__like-button');
+    const likeCount = placeElement.querySelector('.card__like-count');
+
+    likeCount.textContent = cardData.likes.length;
+    
     likeButton.addEventListener('click', () => {
         setLike(likeButton);
     });

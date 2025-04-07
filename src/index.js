@@ -3,7 +3,7 @@ import './pages/index.css';
 import { deletePlace, createPlaceCard, setLike } from './components/cards.js';
 import { openPopup, closePopup, handlePopupClick} from './components/modal.js';
 import { enableValidation, clearValidationErrors } from './components/validate.js';
-import { getInitialCards, getUserInfo, updateUserProfile } from './api.js';
+import { getInitialCards, getUserInfo, updateUserProfile, postNewCard } from './api.js';
 const placesContainer = document.querySelector('.places__list');
 
 
@@ -61,16 +61,18 @@ function openImagePopup(name, link) {
 function handleAddCardSubmit(evt) {
     evt.preventDefault();
 
-    const newCard = {
-        name: cardNameInput.value,
-        link: cardLinkInput.value,
-    };
+    Promise.all([postNewCard(cardNameInput.value, cardLinkInput.value), getUserInfo()])
+    .then(([newCard, userInfo]) => {
+        updateUserInfo(userInfo);
+        const placeCard = createPlaceCard(newCard, deletePlace, setLike, openImagePopup);
+        placesContainer.prepend(placeCard);
+        evt.target.reset();
+        closePopup(addCardPopup);
+    })
+    .catch((err) => {
+        console.log('Ошибка при добавлении карточки', err);
+    });
 
-    const placeCard = createPlaceCard(newCard, deletePlace, setLike, openImagePopup);
-    placesContainer.prepend(placeCard);
-
-    evt.target.reset();
-    closePopup(addCardPopup);
 }
 
 popups.forEach((popup) => {
