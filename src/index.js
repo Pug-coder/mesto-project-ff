@@ -3,7 +3,7 @@ import './pages/index.css';
 import { deletePlace, createPlaceCard, setLike } from './components/cards.js';
 import { openPopup, closePopup, handlePopupClick} from './components/modal.js';
 import { enableValidation, clearValidationErrors } from './components/validate.js';
-import { getInitialCards, getUserInfo, updateUserProfile, postNewCard } from './api.js';
+import { getInitialCards, getUserInfo, updateUserProfile, postNewCard, changeAvatar } from './api.js';
 const placesContainer = document.querySelector('.places__list');
 
 
@@ -33,6 +33,40 @@ const captionElement = imagePopup.querySelector('.popup__caption');
 
 let currentUser = null;
 
+const avatarElement = document.querySelector('.profile__image');
+const avatarPopup = document.querySelector('.popup_type_avatar');
+const avatarForm = avatarPopup.querySelector('.popup__form');
+const avatarLinkInput = avatarForm.querySelector('.popup__input_type_avatar-link');
+
+
+avatarElement.addEventListener('click', () => {
+    clearValidationErrors(avatarForm);
+    openPopup(avatarPopup);
+});
+
+avatarForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    
+    // Показываем индикатор загрузки
+    const submitButton = avatarForm.querySelector('.popup__button');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Сохранение...';
+    
+    changeAvatar(avatarLinkInput.value)
+      .then((userData) => {
+        avatarElement.style.backgroundImage = `url('${userData.avatar}')`;
+        closePopup(avatarPopup);
+        evt.target.reset();
+      })
+      .catch((err) => {
+        console.log('Ошибка при обновлении аватара:', err);
+      })
+      .finally(() => {
+        // Возвращаем оригинальный текст кнопки
+        submitButton.textContent = originalButtonText;
+      });
+  });
+
 function populateProfileForm() {
     nameInput.value = profileName.textContent;
     jobInput.value = profileDescription.textContent;
@@ -41,6 +75,10 @@ function populateProfileForm() {
 function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
+    const submitButton = profileFormElement.querySelector('.popup__button');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Сохранение...';
+
     updateUserProfile(nameInput.value, jobInput.value)
     .then((userData) => {
         updateUserInfo(userData);
@@ -48,8 +86,10 @@ function handleProfileFormSubmit(evt) {
     })
     .catch((err) => {
         console.log('Ошибка при обновлении данных пользователя', err);
+    })
+    .finally(() => {
+        submitButton.textContent = originalButtonText;
     });
-    
 }
 
 function openImagePopup(name, link) {
