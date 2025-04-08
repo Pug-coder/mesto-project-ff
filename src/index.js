@@ -138,15 +138,19 @@ addCardForm.addEventListener('submit', handleAddCardSubmit);
 function updateUserInfo(userInfo) {
     profileName.textContent = userInfo.name;
     profileDescription.textContent = userInfo.about;
+
+    if (userInfo.avatar) {
+        avatarElement.style.backgroundImage = `url('${userInfo.avatar}')`;
+    }
 }
 
 Promise.all([getInitialCards(), getUserInfo()])
     .then(([cards, userInfo]) => {
+        updateUserInfo(userInfo);
         currentUser = userInfo;
-        cards.forEach((cardData) => {
-            updateUserInfo(userInfo);
 
-            const placeCard = createPlaceCard(cardData, deletePlace, setLike, openImagePopup, currentUser._id);
+        cards.forEach((cardData) => {
+            const placeCard = createPlaceCard(cardData, deletePlace, setLike, openImagePopup, userInfo._id);
             placesContainer.append(placeCard);
         });
         
