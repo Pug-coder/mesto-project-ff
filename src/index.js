@@ -31,6 +31,8 @@ const imagePopup = document.querySelector('.popup_type_image');
 const imageElement = imagePopup.querySelector('.popup__image'); 
 const captionElement = imagePopup.querySelector('.popup__caption');
 
+let currentUser = null;
+
 function populateProfileForm() {
     nameInput.value = profileName.textContent;
     jobInput.value = profileDescription.textContent;
@@ -64,7 +66,7 @@ function handleAddCardSubmit(evt) {
     Promise.all([postNewCard(cardNameInput.value, cardLinkInput.value), getUserInfo()])
     .then(([newCard, userInfo]) => {
         updateUserInfo(userInfo);
-        const placeCard = createPlaceCard(newCard, deletePlace, setLike, openImagePopup);
+        const placeCard = createPlaceCard(newCard, deletePlace, setLike, openImagePopup, currentUser._id);
         placesContainer.prepend(placeCard);
         evt.target.reset();
         closePopup(addCardPopup);
@@ -100,10 +102,11 @@ function updateUserInfo(userInfo) {
 
 Promise.all([getInitialCards(), getUserInfo()])
     .then(([cards, userInfo]) => {
+        currentUser = userInfo;
         cards.forEach((cardData) => {
             updateUserInfo(userInfo);
 
-            const placeCard = createPlaceCard(cardData, deletePlace, setLike, openImagePopup);
+            const placeCard = createPlaceCard(cardData, deletePlace, setLike, openImagePopup, currentUser._id);
             placesContainer.append(placeCard);
         });
         
