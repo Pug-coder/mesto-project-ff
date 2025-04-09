@@ -31,6 +31,7 @@ const imagePopup = document.querySelector('.popup_type_image');
 const imageElement = imagePopup.querySelector('.popup__image'); 
 const captionElement = imagePopup.querySelector('.popup__caption');
 
+// For user id detection 
 let currentUser = null;
 
 const avatarElement = document.querySelector('.profile__image');
@@ -103,9 +104,12 @@ function openImagePopup(name, link) {
 function handleAddCardSubmit(evt) {
     evt.preventDefault();
 
-    Promise.all([postNewCard(cardNameInput.value, cardLinkInput.value), getUserInfo()])
-    .then(([newCard, userInfo]) => {
-        updateUserInfo(userInfo);
+    const submitButton = addCardForm.querySelector('.popup__button');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Сохранение...';
+
+    postNewCard(cardNameInput.value, cardLinkInput.value)
+    .then((newCard) => {
         const placeCard = createPlaceCard(newCard, deletePlace, setLike, openImagePopup, currentUser._id);
         placesContainer.prepend(placeCard);
         evt.target.reset();
@@ -113,8 +117,10 @@ function handleAddCardSubmit(evt) {
     })
     .catch((err) => {
         console.log('Ошибка при добавлении карточки', err);
+    })
+    .finally(() => {
+        submitButton.textContent = originalButtonText;
     });
-
 }
 
 popups.forEach((popup) => {

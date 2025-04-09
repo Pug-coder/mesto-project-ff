@@ -57,6 +57,11 @@ export function createPlaceCard(cardData, deleteHandler, setLike, openImagePopup
 
     likeCount.textContent = cardData.likes.length;
 
+    const isLiked = cardData.likes.some(like => like._id === userId);
+    if (isLiked) {
+        likeButton.classList.add('card__like-button_is-active');
+    }
+
     likeButton.addEventListener('click', () => {
         setLike(likeButton, cardData._id);
     });
