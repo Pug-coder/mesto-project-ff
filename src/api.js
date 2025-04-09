@@ -1,3 +1,5 @@
+import { request } from './utils/request';
+
 const config = {
     baseUrl: 'https://nomoreparties.co/v1/wff-cohort-35',
     headers: {
@@ -6,106 +8,63 @@ const config = {
     }
   }
   
-  export const getInitialCards = () => {
-    return fetch(`${config.baseUrl}/cards`, {
-      headers: config.headers
-    })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-      });
+  function getApiUrl(endpoint) {
+    return `${config.baseUrl}/${endpoint}`;
   }
 
-  export const getUserInfo = () => {
-    return fetch(`${config.baseUrl}/users/me`, {
+  export const getInitialCards = () => {
+    return request(getApiUrl('cards'), {
       headers: config.headers
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
+    });
+  } 
+
+  export const getUserInfo = () => {
+    return request(getApiUrl('users/me'), {
+      headers: config.headers
     });
   }
 
   export const updateUserProfile = (name, about) => {
-    return fetch(`${config.baseUrl}/users/me`, {
+    return request(getApiUrl('users/me'), {
       method: 'PATCH',
       headers: config.headers,
       body: JSON.stringify({ name, about })
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
     });
   }
 
   export const postNewCard = (name, link) => {
-    return fetch(`${config.baseUrl}/cards`, {
+    return request(getApiUrl('cards'), {
       method: 'POST',
       headers: config.headers,
       body: JSON.stringify({ name, link })
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
     });
   }
   
 export const deleteCard = (cardId) => {
-  return fetch(`${config.baseUrl}/cards/${cardId}`, {
+  return request(getApiUrl(`cards/${cardId}`), {
     method: 'DELETE',
     headers: config.headers
-  })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
 
 export const likeCard = (cardId) => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+  return request(getApiUrl(`cards/likes/${cardId}`), {
     method: 'PUT',
     headers: config.headers
-  })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
 
 export const dislikeCard = (cardId) => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+  return request(getApiUrl(`cards/likes/${cardId}`), {
     method: 'DELETE',
     headers: config.headers
-  }).then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
 
 export const changeAvatar = (avatar) => {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
+  return request(getApiUrl(`users/me/avatar`), {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({ avatar })
-  })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
